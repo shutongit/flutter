@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_app/widget/m_list.dart';
 import 'package:material_app/page/app_bar.dart';
+import 'package:material_app/page/banner_demo.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,11 +35,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List list = const [
-    MList(
-        title: '应用栏',
-        description: '显示与当前屏幕有关的信息和操作',
-        icon: Icon(Icons.view_comfortable_rounded))
+  List list = [
+    const MList(
+      title: '应用栏',
+      description: '显示与当前屏幕有关的信息和操作',
+      icon: Icon(Icons.view_comfortable_rounded),
+      widget: AppBarDemo(),
+    ),
+    const MList(
+      title: '横幅',
+      description: '在列表内显示横幅',
+      icon: Icon(Icons.view_kanban_outlined),
+      widget: BannerDemo(),
+    ),
   ];
 
   @override
@@ -55,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () => {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AppBarDemo()),
+                MaterialPageRoute(builder: (context) => list[index].widget),
               )
             },
             child: Container(
