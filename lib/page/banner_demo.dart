@@ -1,9 +1,4 @@
-// Copyright 2020 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
-// import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 
 enum BannerDemoAction {
   reset,
@@ -15,48 +10,34 @@ class BannerDemo extends StatefulWidget {
   const BannerDemo({super.key});
 
   @override
-  State<BannerDemo> createState() => _BannerDemoState();
+  State<StatefulWidget> createState() {
+    return _BannerDemoState();
+  }
 }
 
-class _BannerDemoState extends State<BannerDemo> with RestorationMixin {
-  static const _itemCount = 20;
+class _BannerDemoState extends State<BannerDemo> {
+  bool _displayBanner = true;
+  bool _showMultipleActions = true;
+  bool _showLeading = true;
 
-  @override
-  String get restorationId => 'banner_demo';
-
-  @override
-  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-    registerForRestoration(_displayBanner, 'display_banner');
-    registerForRestoration(_showMultipleActions, 'show_multiple_actions');
-    registerForRestoration(_showLeading, 'show_leading');
-  }
-
-  final RestorableBool _displayBanner = RestorableBool(true);
-  final RestorableBool _showMultipleActions = RestorableBool(true);
-  final RestorableBool _showLeading = RestorableBool(true);
-
-  @override
-  void dispose() {
-    _displayBanner.dispose();
-    _showMultipleActions.dispose();
-    _showLeading.dispose();
-    super.dispose();
-  }
-
+  /// 下拉列表点击事件
   void handleDemoAction(BannerDemoAction action) {
     setState(() {
       switch (action) {
         case BannerDemoAction.reset:
-          _displayBanner.value = true;
-          _showMultipleActions.value = true;
-          _showLeading.value = true;
+          _displayBanner = true;
+          _showMultipleActions = true;
+          _showLeading = true;
           break;
+
         case BannerDemoAction.showMultipleActions:
-          _showMultipleActions.value = !_showMultipleActions.value;
+          _showMultipleActions = !_showMultipleActions;
           break;
+
         case BannerDemoAction.showLeading:
-          _showLeading.value = !_showLeading.value;
+          _showLeading = !_showLeading;
           break;
+        default:
       }
     });
   }
@@ -64,32 +45,34 @@ class _BannerDemoState extends State<BannerDemo> with RestorationMixin {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    // final localizations = GalleryLocalizations.of(context)!;
     final banner = MaterialBanner(
-      content: const Text('localizations.bannerDemoText'),
-      leading: _showLeading.value
+      content: const Text('您的密码已在其他设备上更新。请重新登录。'),
+      leading: _showLeading
           ? CircleAvatar(
               backgroundColor: colorScheme.primary,
-              child: Icon(Icons.access_alarm, color: colorScheme.onPrimary),
+              child: Icon(
+                Icons.access_alarm,
+                color: colorScheme.onPrimary,
+              ),
             )
           : null,
       actions: [
         TextButton(
           onPressed: () {
             setState(() {
-              _displayBanner.value = false;
+              _displayBanner = false;
             });
           },
-          child: const Text('localizations.signIn'),
+          child: const Text(
+            '登录',
+          ),
         ),
-        if (_showMultipleActions.value)
+        if (_showMultipleActions)
           TextButton(
             onPressed: () {
-              setState(() {
-                _displayBanner.value = false;
-              });
+              _displayBanner = false;
             },
-            child: const Text('localizations.dismiss'),
+            child: const Text('关闭'),
           ),
       ],
       backgroundColor: colorScheme.background,
@@ -97,45 +80,43 @@ class _BannerDemoState extends State<BannerDemo> with RestorationMixin {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('localizations.demoBannerTitle'),
+        // automaticallyImplyLeading: false,
+        title: const Text('横幅'),
         actions: [
           PopupMenuButton<BannerDemoAction>(
-            onSelected: handleDemoAction,
-            itemBuilder: (context) => <PopupMenuEntry<BannerDemoAction>>[
-              const PopupMenuItem<BannerDemoAction>(
-                value: BannerDemoAction.reset,
-                child: Text('localizations.bannerDemoResetText'),
-              ),
-              const PopupMenuDivider(),
-              CheckedPopupMenuItem<BannerDemoAction>(
-                value: BannerDemoAction.showMultipleActions,
-                checked: _showMultipleActions.value,
-                child: const Text('localizations.bannerDemoMultipleText'),
-              ),
-              CheckedPopupMenuItem<BannerDemoAction>(
-                value: BannerDemoAction.showLeading,
-                checked: _showLeading.value,
-                child: const Text('localizations.bannerDemoLeadingText'),
-              ),
-            ],
-          ),
+              onSelected: handleDemoAction,
+              itemBuilder: (context) {
+                return <PopupMenuEntry<BannerDemoAction>>[
+                  const PopupMenuItem(
+                    value: BannerDemoAction.reset,
+                    child: Text('重置横幅'),
+                  ),
+                  const PopupMenuDivider(),
+                  CheckedPopupMenuItem<BannerDemoAction>(
+                    value: BannerDemoAction.showMultipleActions,
+                    checked: _showMultipleActions,
+                    child: const Text('多项操作'),
+                  ),
+                  CheckedPopupMenuItem<BannerDemoAction>(
+                    value: BannerDemoAction.showLeading,
+                    checked: _showLeading,
+                    child: const Text('前置图标'),
+                  ),
+                ];
+              })
         ],
       ),
       body: ListView.builder(
         restorationId: 'banner_demo_list_view',
-        itemCount: _displayBanner.value ? _itemCount + 1 : _itemCount,
         itemBuilder: (context, index) {
-          if (index == 0 && _displayBanner.value) {
+          if (index == 0 && _displayBanner) {
             return banner;
           }
           return ListTile(
-            title: Text('项 $index'
-                // localizations.starterAppDrawerItem(
-                //     _displayBanner.value ? index : index + 1),
-                ),
+            title: Text('项 $index'),
           );
         },
+        itemCount: _displayBanner ? 21 : 20,
       ),
     );
   }

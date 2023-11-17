@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_app/widget/m_list.dart';
 import 'package:material_app/page/app_bar.dart';
 import 'package:material_app/page/banner_demo.dart';
+import 'package:material_app/page/bottom_app_bar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,14 +11,16 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue,
+            tertiary: Colors.white,
+            secondaryContainer: Colors.red),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Metrial Demo Home Page'),
@@ -48,6 +51,12 @@ class _MyHomePageState extends State<MyHomePage> {
       icon: Icon(Icons.view_kanban_outlined),
       widget: BannerDemo(),
     ),
+    const MList(
+      title: '底部应用栏',
+      description: '在底部显示导航栏和几项操作',
+      icon: Icon(Icons.book),
+      widget: BottomAppBarDemo(),
+    ),
   ];
 
   @override
@@ -68,8 +77,15 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             },
             child: Container(
-                color: const Color.fromARGB(247, 201, 242, 232),
                 padding: const EdgeInsets.symmetric(vertical: 5),
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      width: 1,
+                      color: Color.fromARGB(255, 201, 194, 194),
+                    ),
+                  ),
+                ),
                 child: ListItem(
                     icon: list[index].icon,
                     title: list[index].title,
@@ -90,23 +106,25 @@ class ListItem extends StatelessWidget {
   final String? descript;
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Padding(
-        padding: const EdgeInsets.all(5),
-        child: icon,
-      ),
-      Column(
-        children: [
-          Text(
-            title ?? '',
-            textAlign: TextAlign.left,
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(descript ?? ''),
-        ],
-      ),
-    ]);
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+          child: icon,
+        ),
+        Column(
+          children: [
+            Text(
+              title ?? '',
+              textAlign: TextAlign.left,
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(descript ?? ''),
+          ],
+        ),
+      ],
+    );
   }
 }
